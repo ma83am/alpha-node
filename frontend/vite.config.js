@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
+  base: mode === 'web' ? '/alpha-node/' : '/',
   build: {
     outDir: mode === 'web' ? '../docs' : 'dist',
     emptyOutDir: true
