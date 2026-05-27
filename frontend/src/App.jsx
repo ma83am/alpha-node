@@ -18,6 +18,9 @@ import {
   FolderOpen
 } from 'lucide-react';
 
+// Rilevamento della modalità di compilazione (VITE_APP_MODE = 'web' o 'local')
+const isWebMode = import.meta.env.VITE_APP_MODE === 'web';
+
 // Determinazione intelligente dell'indirizzo del Backend:
 // Se siamo sulla porta 3000 (Vite Dev Server), puntiamo all'host corrente sulla porta 5000.
 // Se siamo in produzione (build statica), le chiamate saranno relative.
@@ -30,12 +33,12 @@ function App() {
   const [risorse, setRisorse] = useState(null);
   const [pm2Servizi, setPm2Servizi] = useState([]);
   const [dockerContainers, setDockerContainers] = useState([]);
-  const [activeTab, setActiveTab] = useState('homer');
+  const [activeTab, setActiveTab] = useState(isWebMode ? 'applicazioni' : 'homer');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState({}); // Per tracciare i caricamenti dei singoli pulsanti
   
-  // Rilevamento Device: verifica se aperto localmente o da IP esterno
-  const [isLocal, setIsLocal] = useState(true);
+  // Rilevamento Device: verifica se aperto localmente o da IP esterno (sempre remoto/falso se in modalità Web/GitHub)
+  const [isLocal, setIsLocal] = useState(false);
   
   // Toast notifications
   const [toasts, setToasts] = useState([]);
@@ -48,29 +51,43 @@ function App() {
     }, 4000);
   };
 
-  // Verifica localhost
+  // Verifica localhost (disattivata in modalità Web per forzare lo stato remote)
   useEffect(() => {
-    const hostname = window.location.hostname;
-    const isLocalIP = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
-    setIsLocal(isLocalIP);
+    if (isWebMode) {
+      setIsLocal(false);
+    } else {
+      const hostname = window.location.hostname;
+      const isLocalIP = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+      setIsLocal(isLocalIP);
+    }
   }, []);
 
   // Fetch dei dati iniziali e polling
   const fetchData = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/risorse`);
+      // In modalità Web, leggiamo il JSON statico copiato nella cartella public.
+      // In modalità Locale, interroghiamo l'API dinamica del backend Express.
+      const fetchUrl = isWebMode ? './Mappa_Risorse.json' : `${API_BASE}/api/risorse`;
+      const res = await fetch(fetchUrl);
       if (!res.ok) throw new Error("Errore nel recupero delle risorse");
       const data = await res.json();
       setRisorse(data);
     } catch (err) {
       console.error(err);
-      addToast("Impossibile connettersi al database delle risorse.", "error");
+      addToast(
+        isWebMode 
+          ? "Impossibile caricare il database statico delle risorse." 
+          : "Impossibile connettersi al database delle risorse locali.", 
+        "error"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const fetchStatus = async () => {
+    if (isWebMode) return; // Nessun polling dello stato nella versione web statica
+    
     try {
       // Fetch PM2 Status
       const pm2Res = await fetch(`${API_BASE}/api/stato-servizi`);
@@ -93,15 +110,18 @@ function App() {
   // Caricamento iniziale
   useEffect(() => {
     fetchData();
-    fetchStatus();
-
-    // Polling degli stati ogni 5 secondi
-    const interval = setInterval(fetchStatus, 5000);
-    return () => clearInterval(interval);
+    
+    if (!isWebMode) {
+      fetchStatus();
+      // Polling degli stati locali ogni 5 secondi
+      const interval = setInterval(fetchStatus, 5000);
+      return () => clearInterval(interval);
+    }
   }, []);
 
   // Funzioni d'azione per localhost
   const apriCartella = async (percorso, id) => {
+    if (isWebMode) return;
     setActionLoading(prev => ({ ...prev, [id]: true }));
     try {
       const res = await fetch(`${API_BASE}/api/risorse/apri-cartella`, {
@@ -120,6 +140,7 @@ function App() {
   };
 
   const avviaEseguibile = async (percorso, eseguibile, id) => {
+    if (isWebMode) return;
     setActionLoading(prev => ({ ...prev, [id]: true }));
     try {
       const res = await fetch(`${API_BASE}/api/risorse/avvia-eseguibile`, {
@@ -138,6 +159,7 @@ function App() {
   };
 
   const controlloDocker = async (containerName, azione, id) => {
+    if (isWebMode) return;
     setActionLoading(prev => ({ ...prev, [id]: true }));
     try {
       const res = await fetch(`${API_BASE}/api/docker/controllo`, {
@@ -161,7 +183,7 @@ function App() {
   const copiaPercorso = (percorso) => {
     navigator.clipboard.writeText(percorso)
       .then(() => {
-        addToast("Percorso copiato negli appunti dello smartphone!", "success");
+        addToast("Percorso copiato negli appunti!", "success");
       })
       .catch(() => {
         addToast("Impossibile copiare il percorso automaticamente.", "error");
@@ -201,7 +223,9 @@ function App() {
     return (
       <div className="loader-container">
         <div className="spinner"></div>
-        <p style={{ color: '#94a3b8', fontSize: '1rem', fontStyle: 'italic' }}>Inizializzazione Alpha Node in corso...</p>
+        <p style={{ color: '#94a3b8', fontSize: '1rem', fontStyle: 'italic' }}>
+          Inizializzazione Alpha Node {isWebMode ? 'Web' : ''} in corso...
+        </p>
       </div>
     );
   }
@@ -215,14 +239,21 @@ function App() {
             <Activity size={24} color="#fff" />
           </div>
           <div>
-            <h1>Alpha Node</h1>
-            <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>H.O.M.E.R. Ecosystem Dashboard</p>
+            <h1>Alpha Node {isWebMode ? 'Web' : ''}</h1>
+            <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>
+              H.O.M.E.R. Ecosystem {isWebMode ? 'Remote Viewer' : 'Dashboard'}
+            </p>
           </div>
         </div>
 
         {/* Badge Stato Connessione / Rilevamento Device */}
         <div className={`device-badge ${isLocal ? 'local' : 'remote'}`}>
-          {isLocal ? (
+          {isWebMode ? (
+            <>
+              <Globe size={15} />
+              <span>🌐 Versione Web Statica</span>
+            </>
+          ) : isLocal ? (
             <>
               <Laptop size={15} />
               <span>🖥️ PC Locale - Controlli Attivi</span>
@@ -238,20 +269,24 @@ function App() {
 
       {/* Tabs Navigation */}
       <nav className="tabs-navigation">
-        <button 
-          className={`tab-btn ${activeTab === 'homer' ? 'active' : ''}`}
-          onClick={() => setActiveTab('homer')}
-        >
-          <Activity size={18} />
-          Servizi H.O.M.E.R.
-        </button>
-        <button 
-          className={`tab-btn ${activeTab === 'docker' ? 'active' : ''}`}
-          onClick={() => setActiveTab('docker')}
-        >
-          <Server size={18} />
-          Servizi Docker
-        </button>
+        {!isWebMode && (
+          <>
+            <button 
+              className={`tab-btn ${activeTab === 'homer' ? 'active' : ''}`}
+              onClick={() => setActiveTab('homer')}
+            >
+              <Activity size={18} />
+              Servizi H.O.M.E.R.
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'docker' ? 'active' : ''}`}
+              onClick={() => setActiveTab('docker')}
+            >
+              <Server size={18} />
+              Servizi Docker
+            </button>
+          </>
+        )}
         <button 
           className={`tab-btn ${activeTab === 'applicazioni' ? 'active' : ''}`}
           onClick={() => setActiveTab('applicazioni')}
@@ -271,8 +306,8 @@ function App() {
       {/* Tab Panels */}
       <main className="tab-content">
         
-        {/* TAB 1: SERVIZI H.O.M.E.R. */}
-        {activeTab === 'homer' && (
+        {/* TAB 1: SERVIZI H.O.M.E.R. (Escluso in versione Web) */}
+        {activeTab === 'homer' && !isWebMode && (
           <div className="cards-grid">
             {risorse?.servizi_homer?.map(servizio => {
               const pmState = getPM2Status(servizio.nome_pm2);
@@ -304,7 +339,7 @@ function App() {
                       )}
                       <div className="meta-item">
                         <span>Tipo Avvio:</span>
-                        <span>{servizio.tipo_avvio || servizio.tipo || 'N/A'}</span>
+                        <span>{servizio.tipo_avvio || servicio.tipo || 'N/A'}</span>
                       </div>
                       {pmState.details && (
                         <div className="meta-item">
@@ -354,8 +389,8 @@ function App() {
           </div>
         )}
 
-        {/* TAB 2: SERVIZI DOCKER */}
-        {activeTab === 'docker' && (
+        {/* TAB 2: SERVIZI DOCKER (Escluso in versione Web) */}
+        {activeTab === 'docker' && !isWebMode && (
           <div className="cards-grid">
             {risorse?.servizi_docker?.map(container => {
               const dockState = getDockerStatus(container.container_name);

@@ -1,0 +1,232 @@
+{
+  "servizi_homer": [
+    {
+      "id": "chronos",
+      "nome": "Chronos Bot",
+      "descrizione": "Bot principale per la gestione di promemoria, sveglie e integrazione Telegram/WhatsApp",
+      "percorso": "D:\\HOMER\\Chronos",
+      "eseguibile": "src/index.js",
+      "tipo_avvio": "pm2",
+      "nome_pm2": "homer-chronos"
+    },
+    {
+      "id": "homer_admin_bot",
+      "nome": "HomerAdmin Bot",
+      "descrizione": "Bot Telegram dedicato all'amministrazione dell'ecosistema H.O.M.E.R.",
+      "percorso": "D:\\HOMER\\Servizi\\HomerAdmin",
+      "eseguibile": "admin_bot.js",
+      "tipo_avvio": "pm2",
+      "nome_pm2": "homer-admin-bot"
+    },
+    {
+      "id": "homer_admin_brain",
+      "nome": "HomerAdmin Brain",
+      "descrizione": "Cervello e logica decisionale del bot di amministrazione",
+      "percorso": "D:\\HOMER\\Servizi\\HomerAdmin",
+      "eseguibile": "admin_brain.js",
+      "tipo_avvio": "pm2",
+      "nome_pm2": "homer-admin-brain"
+    },
+    {
+      "id": "weather_report",
+      "nome": "Weather Sveglia Cron",
+      "descrizione": "Generatore automatico giornaliero di bollettini meteo",
+      "percorso": "D:\\HOMER\\Servizi\\Weather_report",
+      "eseguibile": "weather_generator.js",
+      "tipo_avvio": "cron",
+      "orario": "07:00 Daily"
+    },
+    {
+      "id": "whatsapp_local",
+      "nome": "WhatsApp Local Gateway",
+      "descrizione": "Cartella dati e sessione del gateway locale WhatsApp Web",
+      "percorso": "D:\\HOMER\\Servizi\\whatsapp_local",
+      "tipo": "Sessione Locale Gateway"
+    }
+  ],
+  "servizi_docker": [
+    {
+      "id": "immich_server",
+      "nome": "Immich Server",
+      "descrizione": "Servizio core di backup foto e video personale (alternativa Google Photos)",
+      "container_name": "immich_server",
+      "url": "http://localhost:2283",
+      "tipo": "Servizio Docker Core"
+    },
+    {
+      "id": "immich_postgres",
+      "nome": "Immich Database (PostgreSQL)",
+      "descrizione": "Database relazionale primario per Immich con supporto vettoriale",
+      "container_name": "immich_postgres",
+      "tipo": "Database Container"
+    },
+    {
+      "id": "immich_ml",
+      "nome": "Immich Machine Learning",
+      "descrizione": "Motore di machine learning locale per riconoscimento volti ed oggetti di Immich",
+      "container_name": "immich_machine_learning",
+      "tipo": "AI/ML Container"
+    },
+    {
+      "id": "immich_redis",
+      "nome": "Immich Redis Cache",
+      "descrizione": "Database in memory per la cache e code di messaggi di Immich",
+      "container_name": "immich_redis",
+      "tipo": "Cache Container"
+    },
+    {
+      "id": "nextcloud_app",
+      "nome": "Nextcloud Hub",
+      "descrizione": "Suite cloud personale di archiviazione file, documenti e calendari",
+      "container_name": "nextcloud_docker-app-1",
+      "url": "http://localhost:8080",
+      "tipo": "Servizio Docker Core"
+    },
+    {
+      "id": "nextcloud_redis",
+      "nome": "Nextcloud Cache (Redis)",
+      "descrizione": "In-memory cache per velocizzare le operazioni di Nextcloud",
+      "container_name": "nextcloud_docker-redis-1",
+      "tipo": "Cache Container"
+    },
+    {
+      "id": "nextcloud_db",
+      "nome": "Nextcloud Database (MariaDB)",
+      "descrizione": "Database di supporto relazionale primario per Nextcloud",
+      "container_name": "nextcloud_docker-db-1",
+      "tipo": "Database Container"
+    }
+  ],
+  "applicazioni": [
+    {
+      "id": "track_and_build",
+      "nome": "Track & Build App",
+      "descrizione": "Applicazione di tracciamento commesse, distinta base e officina",
+      "percorso": "D:\\HOMER\\Applicazioni\\TrackAndBuild",
+      "eseguibile": "app\\src\\App.jsx",
+      "tipo": "Vite React Web App (Locale / Produzione)"
+    },
+    {
+      "id": "routine_saiyan",
+      "nome": "Routine Saiyan",
+      "descrizione": "Applicazione locale per la gestione delle routine di allenamento e produttività",
+      "percorso": "D:\\HOMER\\Applicazioni\\Routine-Saiyan",
+      "eseguibile": "index.html",
+      "tipo": "Web App Locale (HTML/JS/Firebase)"
+    },
+    {
+      "id": "spesa_smart_2",
+      "nome": "Spesa Smart App",
+      "descrizione": "Applicazione di gestione lista della spesa intelligente",
+      "percorso": "D:\\HOMER\\Applicazioni\\spesa_smart_2",
+      "eseguibile": "pubspec.yaml",
+      "tipo": "Progetto Flutter (Cross-platform)"
+    },
+    {
+      "id": "kid_routine",
+      "nome": "Kid Routine",
+      "descrizione": "Tracciamento e routine educative per bambini",
+      "percorso": "D:\\HOMER\\Applicazioni\\KidRoutine",
+      "eseguibile": "index.html",
+      "tipo": "Web App Locale (HTML/JS)"
+    },
+    {
+      "id": "sveglia_saiyan",
+      "nome": "Sveglia Saiyan",
+      "descrizione": "Sveglia a tema Dragon Ball con tracciamento statistiche",
+      "percorso": "D:\\HOMER\\Applicazioni\\sveglia saiyan",
+      "eseguibile": "build_apk.bat",
+      "tipo": "Progetto Capacitor Mobile (Android/iOS)"
+    },
+    {
+      "id": "nexus",
+      "nome": "Nexus Project",
+      "descrizione": "Cartella di sviluppo e integrazione moduli",
+      "percorso": "D:\\HOMER\\Applicazioni\\Nexus",
+      "tipo": "Cartella di Sviluppo"
+    },
+    {
+      "id": "portale_cad",
+      "nome": "Portale CAD",
+      "descrizione": "Integrazione file e gestione dati per l'archivio CAD",
+      "percorso": "D:\\HOMER\\Applicazioni\\Portale_cad",
+      "tipo": "Cartella di Sviluppo"
+    }
+  ],
+  "technogarage": [
+    {
+      "id": "amministrazione_e_contabilita",
+      "nome": "1. Amministrazione e Contabilità",
+      "descrizione": "Gestione fatture, tasse e contabilità aziendale TechnoGarage",
+      "percorso": "D:\\HOMER\\Technogarage\\1_Amministrazione_e_Contabilita"
+    },
+    {
+      "id": "preventivi_e_upgrade",
+      "nome": "2. Preventivi e Upgrade",
+      "descrizione": "Elenco preventivi clienti e schede di upgrade hardware",
+      "percorso": "D:\\HOMER\\Technogarage\\2_Preventivi_e_Upgrade"
+    },
+    {
+      "id": "grafica_e_brand_identity",
+      "nome": "3. Grafica e Brand Identity",
+      "descrizione": "Asset grafici, loghi, vettoriali e identità visiva di TechnoGarage",
+      "percorso": "D:\\HOMER\\Technogarage\\3_Grafica_e_Brand_Identity"
+    },
+    {
+      "id": "locandine_e_marketing",
+      "nome": "4. Locandine e Marketing",
+      "descrizione": "Materiale promozionale, locandine social ed eventi marketing",
+      "percorso": "D:\\HOMER\\Technogarage\\4_Locandine_e_Marketing"
+    },
+    {
+      "id": "archivio_backup_originale",
+      "nome": "5. Archivio Backup Originale",
+      "descrizione": "File storici e backup originali di TechnoGarage",
+      "percorso": "D:\\HOMER\\Technogarage\\5_Archivio_Backup_Originale"
+    },
+    {
+      "id": "articoli",
+      "nome": "Articoli",
+      "descrizione": "Articoli e post blog redatti per il sito",
+      "percorso": "D:\\HOMER\\Technogarage\\Articoli"
+    },
+    {
+      "id": "dashboard_technogarage_html",
+      "nome": "Dashboard TechnoGarage",
+      "descrizione": "Pannello html locale per l'anteprima dei servizi TechnoGarage",
+      "percorso": "D:\\HOMER\\Technogarage\\Dashboard_TechnoGarage.html",
+      "eseguibile": "Dashboard_TechnoGarage.html",
+      "tipo": "File HTML Locale"
+    }
+  ],
+  "risorse_web": [
+    {
+      "id": "guida_spesa_smart",
+      "nome": "Guida Spesa Smart",
+      "descrizione": "Sito web di documentazione per la lista della spesa intelligente",
+      "percorso": "D:\\HOMER\\SitiWeb\\guida_spesa_smart",
+      "url": "http://localhost:8080/guida_spesa_smart"
+    },
+    {
+      "id": "siti_campione",
+      "nome": "Siti Campione",
+      "descrizione": "Raccolta di siti web di riferimento per studio e benchmark",
+      "percorso": "D:\\HOMER\\SitiWeb\\siti_campione",
+      "url": "http://localhost:8080/siti_campione"
+    },
+    {
+      "id": "sito_technogarage",
+      "nome": "Sito TechnoGarage V1",
+      "descrizione": "Prima versione statica del sito web TechnoGarage",
+      "percorso": "D:\\HOMER\\SitiWeb\\Sito_technogarage",
+      "url": "http://localhost:8080/Sito_technogarage"
+    },
+    {
+      "id": "sito_technogarage_v2",
+      "nome": "Sito TechnoGarage V2",
+      "descrizione": "Seconda versione interattiva e aggiornata del sito TechnoGarage",
+      "percorso": "D:\\HOMER\\SitiWeb\\Sito_technogarage_v2",
+      "url": "http://localhost:8080/Sito_technogarage_v2"
+    }
+  ]
+}
